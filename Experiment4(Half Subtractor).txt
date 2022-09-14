@@ -1,0 +1,22 @@
+module half_sub(a, b, diff, borrow);
+	input a,b;
+	output diff, borrow;
+	assign diff = (~a&b) | (a&~b);
+	assign borrow = ~a&b;
+endmodule
+
+module simhalfsub;
+reg a,b;
+wire d, bo;
+half_sub hs(a, b, d, bo);
+	initial begin
+		$dumpfile("test.vcd");
+		$dumpvars(0, hs);
+		$monitor("a = %d, b = %d, diff = %d, borrow = %d", a, b, d, bo);
+        a = 0;b = 0; #10
+        a = 0;b = 1; #10
+        a = 1;b = 0; #10
+        a = 1;b = 1; #10
+		$finish;
+	end
+endmodule

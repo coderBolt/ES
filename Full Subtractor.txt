@@ -1,0 +1,40 @@
+module half_sub(a, b, d, bo);
+	input a,b;
+	output d, bo;
+	assign d = (~a&b) | (a&~b);
+	assign bo = ~a&b;
+endmodule
+
+module full_sub(a, b, bin, d, bo);
+	input a,b, bin;
+	output d,bo;
+	wire d1, b1;
+	wire d2, b2;
+	half_sub hs1(a, b, d1, b1);
+	half_sub hs2(d1, bin, d2, b2);
+
+	assign d = d2;
+	assign bo = b1 | b2;
+endmodule
+
+
+module test;
+reg a,b,bin;
+wire d, bo;
+full_sub fs(a, b, bin, d, bo);
+	initial begin
+		$dumpfile("test.vcd");
+		$dumpvars(0, fs);
+		$monitor("a = %d, b = %d, bin = %d, diff = %d, borrow = %d", a, b, bin, d, bo);
+
+		a = 0;b = 0;bin = 0; #10
+        a = 0;b = 0;bin = 1; #10
+        a = 0;b = 1;bin = 0; #10
+        a = 0;b = 1;bin = 1; #10
+        a = 1;b = 0;bin = 0; #10
+        a = 1;b = 0;bin = 1; #10
+        a = 1;b = 1;bin = 0; #10
+        a = 1;b = 1;bin = 1; #10
+		$finish;
+	end
+endmodule

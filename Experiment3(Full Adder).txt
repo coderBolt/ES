@@ -1,0 +1,44 @@
+module halfgate(a,b,s,c);
+input a,b;
+output s,c;
+assign s = (a^b);
+assign c = (a & b);
+endmodule
+
+module fulladder(a,b,cin,sum,cout);
+input a,b,cin;
+output sum,cout;
+wire ha1_sum;
+wire ha2_sum;
+wire ha1_carry;
+wire ha2_carry;
+halfgate ha1(a,b,ha1_sum,ha1_carry);
+halfgate ha2(cin,ha1_sum,ha2_sum,ha2_carry);
+
+assign sum = ha2_sum;
+assign cout = ha1_carry | ha2_carry;
+endmodule
+
+module test;
+reg a,b,cin;
+wire sum,cout;
+
+fulladder fd(a,b,cin,sum,cout);
+
+initial begin
+$dumpfile("test.vcd");
+$dumpvars(0,fd);
+$display("\ta\tb\tcin\tcarry\tsum");
+$monitor("\t%d\t%d\t%d\t%d\t%d\t", a,b,cin,cout,sum);
+a=0; b=0; cin=0;  #10
+a=0; b=0; cin=1;  #10
+a=0; b=1; cin=0;  #10
+a=0; b=1; cin=1;  #10
+a=1; b=0; cin=0;  #10
+a=1; b=0; cin=1;  #10
+a=1; b=1; cin=0;  #10
+a=1; b=1; cin=1;  #10
+$finish;
+end
+
+endmodule
